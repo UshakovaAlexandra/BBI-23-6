@@ -1,12 +1,18 @@
 ﻿using System;
 
-namespace ConsoleApp1
-{
-    internal class Program
-    {
-        static void Main(string[] args)
+namespace Program {
+
+    class Program { 
+    static void Main ()
         {
-            Console.WriteLine("Hello World!");
-        }
+            int n = 6;  
+            int Factorial = 1;
+
+            for (int i = 2; i <= n; i++) 
+            {
+                Factorial = Factorial * i;
+            }
+            Console.WriteLine(Factorial);
+      }
     }
 }
