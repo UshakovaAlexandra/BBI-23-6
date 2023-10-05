@@ -75,6 +75,27 @@ namespace Program
     }
 }
 // Задача 5
+using System;
+
+namespace ConsoleApplication5
+{
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("Введите значение для переменных p и h");
+            double p = Double.Parse(Console.ReadLine());
+            double h = Double.Parse(Console.ReadLine());
+            double s = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                s += ((p + i * h) * (p + i * h));
+            }
+            Console.WriteLine("Сумма " + s);
+            Console.ReadLine();
+        }
+    }
+}
 
 // Задача 6
 using System;
