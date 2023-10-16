@@ -36,20 +36,23 @@ namespace Program
 }
 // Задача 3
 using System;
-
-namespace Program
+ 
+namespace ConsoleApp1_3
 {
-
     class Program
     {
-        public static void Main()
+        static void Main()
         {
-            double s = 0; for (int i = 1; i <= 112; i++ ) 
-            
+            double s = 0;
+            double i;
+            double j = 0;
+            for (i = 2; i <= 112; i = i + 2)
             {
-                 s += (double) i / (i + 1); 
+                j = i + 1;
+                s += i / j;
+                Console.WriteLine("i = {0} , j = {1} , s = {2}", i, j, s);
             }
-            Console.WriteLine(s);
+            Console.WriteLine("s = " + s);
             Console.ReadKey();
         }
     }
@@ -247,7 +250,7 @@ namespace Program
             double x = Convert.ToDouble(Console.ReadLine());
             double p = 1;
             double sum = 0;
-            for (int i = 1; i <= 10; i++)
+            for (int i = 0; i <= 10; i++)
             { 
                 sum += 1 / p;
                 p *= x;
@@ -345,20 +348,25 @@ namespace Program
     {
         static void Main()
         {
-            double s = 0;
-            double n = 1;
-            Console.Write("Enter the value of x: ");
-            double x = Convert.ToDouble(Console.ReadLine());
-            const double e = 0.0001;
-            s = Math.Cos(x) + Math.Cos(2 * x) / 2 * 2 + Math.Cos(n * x) / n * n;
-         while (Math.Cos(n * x) / n * n >= e)
+            double x;
+                Console.Write("Введите значение x: ");              
+                x = Convert.ToDouble(Console.ReadLine());           
+            double sum = 0; 
+            double i = 1;
+            double a;
+            a = Math.Cos(i * x) / Math.Pow(i, 2);     
+            Console.WriteLine("Первое слагаемое " + a);
+            while (Math.Abs(a) > 0.0001)        
             {
-                s = s + Math.Cos(n * x) / n * n;
-                n = n + 1;
+                sum += a;
+                Console.WriteLine("Степень {0}  текущая сумма {1} ", i, sum);
+                i += 1;                
+                a = Math.Cos(i * x) / Math.Pow(i, 2); 
+                Console.WriteLine("Следующее слагаемое " + a);
             }
-            Console.WriteLine(s);
+            Console.WriteLine("Результат вычисления S = " + sum);
+            Console.ReadKey();
         }
-
     }
 }
 // Задача 2
@@ -434,10 +442,12 @@ namespace ConsoleApp2_4
             double a;
             a = Math.Pow(x, i);     
             Console.WriteLine("Первое слагаемое " + a);
-            while (a > 0.0001)        
+            while (a > 0.0001)   
+            {
                 sum += a;
                 Console.WriteLine("Степень {0}  текущая сумма {1} ", i, sum);
-                i += 2;                 
+                i += 2;
+                a = Math.Pow(x, i);                 
                 Console.WriteLine("Следующее слагаемое " + a);
             }
             Console.WriteLine("Результат вычисления S = " + sum);
