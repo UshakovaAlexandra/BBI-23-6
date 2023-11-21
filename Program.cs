@@ -1,48 +1,58 @@
-﻿// задача 12
+﻿// задача 15
 using System;
-
+ 
 class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
-        //Ввод размера массива и его  элементов
-        Console.Write("Введите количество элементов массива: ");
-        int q = Convert.ToInt32(Console.ReadLine());
-        int[] a = new int[q];
-        for (int n = 0; n < q; n++)
+        int n = 0;
+        do
         {
-            Console.Write("Введите " + n + "элемент массива: ");
-            a[n] = Convert.ToInt32(Console.ReadLine());
-        }
-        int max = 0;
-        int sum = 0;
-
-        for (int i = 0; i < q; i++)
+            Console.Write("Введите n: ");
+            n = int.Parse(Console.ReadLine());
+            if (n < 2) Console.WriteLine("Введите другое значение!");
+        } while (n < 2);
+        Console.WriteLine("Введите массив: ");
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++)
         {
-            if (a[i] < 0)
-            {
-                for (int j = i; j < q; j++)
-                {
-                    sum += a[j];
-                }
-                break;
-            }
-
-            if (a[i] > a[max])
-            {
-                max = i;
-            }
+            string s = Console.ReadLine();
+            a[i] = int.Parse(s);
         }
-
-        a[max] += sum;
-
-        Console.WriteLine("Новый массив: ");
-        foreach (int n in a)
+        Console.Write("Введите m: ");
+        int m = int.Parse(Console.ReadLine());
+        Console.WriteLine("Введите массив: ");
+        int[] b = new int[m];
+        for (int i = 0; i < m; i++)
         {
-            Console.Write(n + " ");
+            string s1 = Console.ReadLine();
+            b[i] = int.Parse(s1);
         }
-
-        Console.ReadLine();
+        int[] c = new int[n + m];
+        int k = 0;
+        do
+        {
+            Console.Write("Введите k: ");
+            k = int.Parse(Console.ReadLine());
+            if (k > n) Console.WriteLine("Введите другое значение!");
+        } while (k > n);
+        for (int i = 0; i <= k; i++)
+        {
+            c[i] = a[i];
+        }
+        for (int i = 0; i < m; i++)
+        {
+            c[k + i + 1] = b[i];
+        }
+        for (int i = k + m + 1; i < m + n; i++)
+        {
+            c[i] = a[i - m];
+        }
+        Console.WriteLine("Получившийся массив: ");
+        for (int i = 0; i < m + n; i++)
+        {
+            Console.WriteLine(c[i]);
+        }
         Console.ReadKey();
     }
 }
