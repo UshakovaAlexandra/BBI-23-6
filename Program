@@ -1,0 +1,145 @@
+// Задача 15 
+using System;
+ 
+class Program
+{
+    static void Main()
+    {
+        int n = 0;
+        do
+        {
+            Console.Write("Введите n: ");
+            n = int.Parse(Console.ReadLine());
+            if (n < 2) Console.WriteLine("Введите другое значение!");
+        } while (n < 2);
+        Console.WriteLine("Введите массив: ");
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++)
+        {
+            string s = Console.ReadLine();
+            a[i] = int.Parse(s);
+        }
+        Console.Write("Введите m: ");
+        int m = int.Parse(Console.ReadLine());
+        Console.WriteLine("Введите массив: ");
+        int[] b = new int[m];
+        for (int i = 0; i < m; i++)
+        {
+            string s1 = Console.ReadLine();
+            b[i] = int.Parse(s1);
+        }
+        int[] c = new int[n + m];
+        int k = 0;
+        do
+        {
+            Console.Write("Введите k: ");
+            k = int.Parse(Console.ReadLine());
+            if (k >= n) Console.WriteLine("Введите другое значение!");
+        } while (k >= n);
+        for (int i = 0; i <= k; i++)
+        {
+            c[i] = a[ i];
+        }
+        for (int i = 0; i < m; i++)
+        {
+            c[k + i + 1] = b[i];
+        }
+        for (int i = k + m + 1; i < m + n; i++)
+        {
+            c[i] = a[i - m];
+        }
+        Console.WriteLine("Получившийся массив: ");
+        for (int i = 0; i < m + n; i++)
+        {
+            Console.WriteLine(c[i]);
+        }
+        Console.ReadKey();
+    }
+}
+// Задача 17
+using System;
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.Write("Введите n: ");
+        int n = int.Parse(Console.ReadLine());
+        Console.WriteLine("Введите массив: ");
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++)
+        {
+            string s = Console.ReadLine();
+            a[i] = int.Parse(s);
+        }
+        int amax = 0;
+        int imax = 0;
+        int amin = 0;
+        int imin = 0;
+        for (int i = 0; i < n; i++)
+        {
+            if (a[i] > amax)
+            {
+                amax = a[i];
+                imax = i;
+            }
+            if (a[i] < amin)
+            {
+                amin = a[i];
+                imin = i;
+            }
+        }
+        Console.WriteLine("максимальное значение: {0}", amax);
+        Console.WriteLine("минимальное значение: {0}", amin);
+        double sump = 0;
+        double sumo = 0;
+        int m = 0;
+        int v = 0;
+        double srp = 0;
+        double sro = 0;
+        if (imax < imin)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                if (a[i] > 0)
+                {
+                    sump += a[i];
+                    m++;
+                }
+            }
+            Console.WriteLine($"sum: {sump}");
+            if (m != 0)
+            {
+                srp = sump / m;
+            }
+            else
+            {
+                Console.WriteLine("Невозможно выполнить деление, введенные данные не удволетворяют условию");
+            }
+            Console.WriteLine($"среднее значение: {srp}");
+        }
+        else if (imax > imin)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                if (a[i] < 0)
+                {
+                    sumo += a[i];
+                    v++;
+                }
+            }
+            if (v != 0)
+            {
+                sro = sumo / v;
+            }
+            else
+            {
+                Console.WriteLine("Невозможно выполнить деление, введенные данные не удволетворяют условию");
+            }
+            Console.WriteLine("sum: {0}", sumo);
+            Console.WriteLine("среднее значение: {0}", sro);
+        }
+        //Console.WriteLine("среднее значение: {0}", sr);
+        //Console.WriteLine(sr);
+        Console.ReadKey();
+    }
+}
