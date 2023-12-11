@@ -1,6 +1,7 @@
-// 4 лаба
-// 9
+// лаба 4 защита
 using System;
+using System.Runtime.CompilerServices;
+
 class Program
 {
     static void Main()
@@ -32,29 +33,72 @@ class Program
             }
             Console.WriteLine();
         }
-        int r = N;
-        int c = M;
-
-        int[,] a = new int[r, c];
-
-        for (int i = 0; i < r; i++)
+        int[] C = new int[A.GetLength(1)];
+        for (int j = 0; j < A.GetLength(1); j++)
         {
-            for (int j = 0; j < c; j++)
+            for (int i = 0; i < A.GetLength(0); i++)
             {
-                a[i, j] = A[i,c - j - 1];
+                if (A[i, j] < 0) C[j]++;
             }
         }
-
-        // Выводим элементы обратной матрицы
-        Console.WriteLine("Новая матрица: ");
-        for (int i = 0; i < r; i++)
+        Console.WriteLine();
+        int d;
+        for (int k = 0; k < n; k++)
         {
-            for (int j = 0; j < c; j++)
+            for (int j = 1; j < A.GetLength(1); j++)
             {
-                Console.Write(a[i,j] + " ");
+                if (C[j] < C[j - 1])
+                {
+                    d = C[j - 1];
+                    C[j - 1] = C[j];
+                    C[j] = d;
+                    for (int i = 0; i < A.GetLength(0); i++)
+                    {
+                        d = A[i, j - 1];
+                        A[i, j - 1] = A[i, j];
+                        A[i, j] = d;
+
+                    }
+                }
+            }
+        }
+        Console.WriteLine("Матрица в виде двумерного массива:");
+        for (int i = 0; i < A.GetLength(0); i++)
+        {
+            for (int j = 0; j < A.GetLength(1); j++)
+            {
+                Console.Write(A[i, j] + " ");
             }
             Console.WriteLine();
         }
-        Console.ReadKey();
+        int[] sortedA = new int[A.GetLength(0) * A.GetLength(1)];
+        for (int j = 0; j < A.GetLength(1); j++)
+        {
+            for (int i = 0; i < A.GetLength(0); i++)
+            {
+                sortedA[i * A.GetLength(1) + j] = A[i, j];
+            }
+        }
+        sortedA = GnomeSort(sortedA);
+        Console.WriteLine("Матрица в виде одномерного массива:");
+        for (int i = 0; i < sortedA.Length; i++)
+        {
+            Console.Write(sortedA[i] + " ");
+        }
+        Console.WriteLine();
+    }
+    static int[] GnomeSort(int[] arr)
+    {
+        int d = 0;
+        for (int i = 1; i < arr.Length; i++)
+        {
+            for (int j = i; j > 0 && arr[j] < arr[j - 1]; j--)
+            {
+                d = arr[j];
+                arr[j] = arr[j - 1];
+                arr[j - 1] = d;
+            }
+        }
+        return arr;
     }
 }
