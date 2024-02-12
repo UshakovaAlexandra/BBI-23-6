@@ -1,277 +1,238 @@
-// 7
+// лаба 6(первая лаба 2 семестра)
+// задача 1
 using System;
+using System.Collections.Generic;
+
+class Participant
+{
+    private string lastName;
+    private string society;
+    private double firstAttempt;
+    private double secondAttempt;
+
+    public string LastName
+    {
+        get { return lastName; }
+        set { lastName = value; }
+    }
+
+    public string Society
+    {
+        get { return society; }
+        set { society = value; }
+    }
+
+    public double FirstAttempt
+    {
+        get { return firstAttempt; }
+        set { firstAttempt = value; }
+    }
+
+    public double SecondAttempt
+    {
+        get { return secondAttempt; }
+        set { secondAttempt = value; }
+    }
+
+    public double GetTotalDistance()
+    {
+        return FirstAttempt + SecondAttempt;
+    }
+}
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        // Инициализация исходных массивов
-        int E, e, Q, q;
-        Console.WriteLine("Введите число строк и столбцов матрицы");
-        Console.Write("Число строк E="); // Введите E
-        E = int.Parse(Console.ReadLine());
-        Console.Write("Число столбцов Q="); // Введите Q
-        Q = int.Parse(Console.ReadLine());
-        Console.WriteLine();
-        Random r = new Random(); // Для случайных чисел
-        int[,] B = new int[E, Q]; // Матрица B[E,Q] типа int 
-        for (e = 0; e < E; e++)
+        List<Participant> participants = new List<Participant>();
+
+        // Добавление участников в список
+        participants.Add(new Participant { LastName = "Вавилов", Society = "Общество 1", FirstAttempt = 7.2, SecondAttempt = 7.5 });
+        participants.Add(new Participant { LastName = "Конюхов", Society = "Общество 2", FirstAttempt = 6.8, SecondAttempt = 7.0 });
+        participants.Add(new Participant { LastName = "Смирнов", Society = "Общество 1", FirstAttempt = 7.0, SecondAttempt = 6.4 });
+
+        // Сортировка результатов по сумме двух попыток
+        participants.Sort((p1, p2) => p2.GetTotalDistance().CompareTo(p1.GetTotalDistance()));
+
+        // Вывод протокола в виде таблицы
+        Console.WriteLine("Место\tФамилия\tОбщество\tРезультат");
+        for (int i = 0; i < participants.Count; i++)
         {
-            for (q = 0; q < Q; q++)
-            {
-                int Qq = r.Next(-100, 100); // Генерация случайного числа 
-                B[e, q] = Qq;
-            }
+            Participant participant = participants[i];
+            Console.WriteLine($"{i + 1}\t{participant.LastName}\t{participant.Society}\t{participant.GetTotalDistance()}");
         }
-        int F, f, Z, z;
-        Console.WriteLine("Введите число строк и столбцов матрицы");
-        Console.Write("Число строк F= "); // Введите F
-        F = int.Parse(Console.ReadLine());
-        Console.Write("Число столбцов Z= "); // Введите Z
-        Z = int.Parse(Console.ReadLine());
-        Console.WriteLine();
-        Random rnd = new Random(); // Для случайных чисел
-        int[,] C = new int[F, Z]; // Матрица C[F,Z] типа int 
-        for (f = 0; f < F; f++)
-        {
-            for (z = 0; z < Z; z++)
-            {
-                int Zz = rnd.Next(-100, 100); // Генерация случайного числа 
-                C[f, z] = Zz;
-            }
-        }
-        Console.WriteLine("Начальная матрица B: ");// вывод начальной матрицы
-        for (int i = 0; i < E; i++)
-        {
-            for (int j = 0; j < Q; j++)
-            {
-                Console.Write("{0, 4} ", B[i, j]);
-            }
-            Console.WriteLine();
-        }
-        Console.WriteLine("Начальная матрица C: ");// вывод начальной матрицы
-        for (int i = 0; i < F; i++)
-        {
-            for (int j = 0; j < Z; j++)
-            {
-                Console.Write("{0, 4} ", C[i, j]);
-            }
-            Console.WriteLine();
-        }
-
-        // Поиск строки с максимальным количеством положительных элементов
-        int maxPositiveCountRow = FindRowWithMaxPositiveCount(B);
-
-        // Поиск столбца с максимальным количеством положительных элементов
-        int maxPositiveCountColumn = FindColumnWithMaxPositiveCount(C);
-
-        // Вставка столбца C после строки с максимальным количеством положительных элементов
-        int[,] result = InsertColumnAfterRow(B, C, maxPositiveCountRow, maxPositiveCountColumn);
-
-        // Вывод результата
-        Console.WriteLine("Вывод результата: ");
-        PrintArray(result);
-
-        int[] onedimensionalArray = ConvertToOnedimensionalArray(result);
-        SortArray(onedimensionalArray);
-
-        Console.WriteLine("Отсортированный одномерный массив:");
-        foreach (int element in onedimensionalArray)
-        {
-            Console.Write($"{element} ");
-        }
-        Console.ReadKey();
+    }
 }
-    static int FindRowWithMaxPositiveCount(int[,] array)
+// задача 1 2 уровень
+using System;
+using System.Collections.Generic;
+
+class Student
+{
+    private string name;
+    private List<double> examScores;
+
+    public string Name
     {
-        int maxPositiveCount = 0;
-        int maxPositiveCountRow = -1;
-
-        for (int i = 0; i < array.GetLength(0); i++)
-        {
-            int positiveCount = 0;
-
-            for (int j = 0; j < array.GetLength(1); j++)
-            {
-                if (array[i, j] > 0)
-                {
-                    positiveCount++;
-                }
-            }
-
-            if (positiveCount > maxPositiveCount)
-            {
-                maxPositiveCount = positiveCount;
-                maxPositiveCountRow = i;
-            }
-        }
-
-        return maxPositiveCountRow;
+        get { return name; }
+        set { name = value; }
     }
 
-    static int FindColumnWithMaxPositiveCount(int[,] array)
+    public List<double> ExamScores
     {
-        int maxPositiveCount = 0;
-        int maxPositiveCountColumn = -1;
-
-        for (int j = 0; j < array.GetLength(1); j++)
-        {
-            int positiveCount = 0;
-
-            for (int i = 0; i < array.GetLength(0); i++)
-            {
-                if (array[i, j] > 0)
-                {
-                    positiveCount++;
-                }
-            }
-
-            if (positiveCount > maxPositiveCount)
-            {
-                maxPositiveCount = positiveCount;
-                maxPositiveCountColumn = j;
-            }
-        }
-
-        return maxPositiveCountColumn;
+        get { return examScores; }
+        set { examScores = value; }
     }
 
-    static int[,] InsertColumnAfterRow(int[,] arrayB, int[,] arrayC, int row, int column)
+    public double GetAverageScore()
     {
-        int rowsB = arrayB.GetLength(0);
-        int columnsB = arrayB.GetLength(1);
-        int rowsC = arrayC.GetLength(0);
-        int columnsC = arrayC.GetLength(1);
-
-        int[,] result = new int[rowsB + 1, columnsB];
-
-        // Копирование массива B до строки с максимальным количеством положительных элементов
-        for (int i = 0; i <= row; i++)
+        double sum = 0;
+        foreach (double score in examScores)
         {
-            for (int j = 0; j < columnsB; j++)
+            sum += score;
+        }
+        return sum / examScores.Count;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        List<Student> students = new List<Student>();
+
+        // Добавление студентов в список
+        students.Add(new Student { Name = "Васечкин", ExamScores = new List<double> { 4.5, 4.8, 4.2, 4.7 } });
+        students.Add(new Student { Name = "Филатова", ExamScores = new List<double> { 4.2, 4.0, 4.5, 3.9 } });
+        students.Add(new Student { Name = "Черниговцев", ExamScores = new List<double> { 3.9, 4.1, 4.3, 4.4 } });
+        students.Add(new Student { Name = "Назарова", ExamScores = new List<double> { 3.9, 3.1, 4.3, 4.2 } });
+
+        // Фильтрация студентов по среднему баллу
+        List<Student> filteredStudents = new List<Student>();
+        foreach (Student student in students)
+        {
+            if (student.GetAverageScore() >= 4)
             {
-                result[i, j] = arrayB[i, j];
+                filteredStudents.Add(student);
             }
         }
 
-        // Вставка столбца C после строки с максимальным количеством положительных элементов
-        for (int i = 0, j = 0; j < columnsB; i++, j++)
-        {
-            //for (int j = 0; j < columnsC; j++)
-            //{
-            result[row + 1, j] = arrayC[i, column];
-            //}
-        }
+        // Сортировка студентов по убыванию среднего балла
+        filteredStudents.Sort((s1, s2) => s2.GetAverageScore().CompareTo(s1.GetAverageScore()));
 
-        // Копирование оставшейся части массива B
-        for (int i = row + 2; i <= rowsB; i++)
+        // Вывод результатов в виде таблицы
+        Console.WriteLine("Студент\t\tСредний балл");
+        foreach (Student student in filteredStudents)
         {
-            for (int j = 0; j < columnsB; j++)
+            Console.WriteLine($"{student.Name}\t\t{student.GetAverageScore()}");
+        }
+    }
+}
+// 6.3
+using System;
+using System.Collections.Generic;
+
+class Survey
+{
+    private List<string> animalAnswers;
+    private List<string> characterTraitAnswers;
+    private List<string> conceptAnswers;
+
+    public List<string> AnimalAnswers
+    {
+        get { return animalAnswers; }
+        set { animalAnswers = value; }
+    }
+
+    public List<string> CharacterTraitAnswers
+    {
+        get { return characterTraitAnswers; }
+        set { characterTraitAnswers = value; }
+    }
+
+    public List<string> ConceptAnswers
+    {
+        get { return conceptAnswers; }
+        set { conceptAnswers = value; }
+    }
+
+    public Dictionary<string, double> GetTopAnswers(List<string> answers)
+    {
+        Dictionary<string, int> answerCounts = new Dictionary<string, int>();
+
+        // Подсчет количества каждого ответа
+        foreach (string answer in answers)
+        {
+            if (answerCounts.ContainsKey(answer))
             {
-                result[i, j] = arrayB[i - 1, j];
-            }
-        }
-
-        return result;
-    }
-
-    static void PrintArray(int[,] array)
-    {
-        for (int i = 0; i < array.GetLength(0); i++)
-        {
-            for (int j = 0; j < array.GetLength(1); j++)
-            {
-                Console.Write(array[i, j] + "\t");
-            }
-            Console.WriteLine();
-        }
-   }
-
-    static void PrintArray(int[] arr)
-    {
-        foreach (int num in arr)
-        {
-            Console.Write(num + " ");
-        }
-        Console.WriteLine();
-    }
-
-
-    static int[] ConvertToOnedimensionalArray(int[,] array)
-    {
-        int[] onedimensionalArray = new int[array.GetLength(0) * array.GetLength(1)];
-
-        for (int i = 0; i < array.GetLength(0); i++)
-        {
-            for (int j = 0; j < array.GetLength(1); j++)
-            {
-                onedimensionalArray[i * array.GetLength(1) + j] = array[i, j];
-            }
-        }
-
-        return onedimensionalArray;
-    }
-
-    static void SortArray(int[] array)
-    {
-        MergeSort(array, 0, array.Length - 1);
-    }
-
-    static void MergeSort(int[] array, int left, int right)
-    {
-        if (left < right)
-        {
-            int middle = (left + right) / 2;
-
-            MergeSort(array, left, middle);
-            MergeSort(array, middle + 1, right);
-
-            Merge(array, left, middle, right);
-        }
-    }
-
-    static void Merge(int[] array, int left, int middle, int right)
-    {
-        int[] tempArray = new int[right - left + 1];
-
-        int i = left;
-        int j = middle + 1;
-        int k = 0;
-
-        while (i <= middle && j <= right)
-        {
-            if (array[i] <= array[j])
-            {
-                tempArray[k] = array[i];
-                i++;
+                answerCounts[answer]++;
             }
             else
             {
-                tempArray[k] = array[j];
-                j++;
+                answerCounts[answer] = 1;
             }
-
-            k++;
         }
 
-        while (i <= middle)
+        // Сортировка ответов по количеству по убыванию
+        List<string> sortedAnswers = new List<string>(answerCounts.Keys);
+        sortedAnswers.Sort((a1, a2) => answerCounts[a2].CompareTo(answerCounts[a1]));
+
+        // Получение первых пяти наиболее часто встречающихся ответов
+        Dictionary<string, double> topAnswers = new Dictionary<string, double>();
+        int totalCount = answers.Count;
+        int count = Math.Min(5, sortedAnswers.Count);
+        for (int i = 0; i < count; i++)
         {
-            tempArray[k] = array[i];
-            i++;
-            k++;
+            string answer = sortedAnswers[i];
+            double percentage = (double)answerCounts[answer] / totalCount * 100;
+            topAnswers[answer] = percentage;
         }
 
-        while (j <= right)
-        {
-            tempArray[k] = array[j];
-            j++;
-            k++;
-        }
-
-        for (k = 0; k < tempArray.Length; k++)
-        {
-            array[left + k] = tempArray[k];
-        }
+        return topAnswers;
     }
 }
 
+class Program
+{
+    static void Main()
+    {
+        Survey survey = new Survey();
+
+        // Получение ответов на вопросы
+        survey.AnimalAnswers = new List<string> { "Кошка", "Собака", "Рыба", "Рыба", "Кошка", "Кролик", "Кошка" };
+        survey.CharacterTraitAnswers = new List<string> { "Самообладание", "Вежливость", "Трудолюбие", "Трудолюбие", "Трудолюбие" };
+        survey.ConceptAnswers = new List<string> { "Чайная церемония", "Сакура", "Сакура", "Суши", "Самурай", "Суши", "Сакура" };
+
+        // Получение первых пяти наиболее часто встречающихся ответов и их доли в процентах
+        Dictionary<string, double> topAnimalAnswers = survey.GetTopAnswers(survey.AnimalAnswers);
+        Dictionary<string, double> topCharacterTraitAnswers = survey.GetTopAnswers(survey.CharacterTraitAnswers);
+        Dictionary<string, double> topConceptAnswers = survey.GetTopAnswers(survey.ConceptAnswers);
+
+        // Вывод результатов
+        Console.WriteLine("Вопрос а): Какое животное Вы связываете с Японией и японцами?");
+        PrintTopAnswers(topAnimalAnswers);
+
+        Console.WriteLine("Вопрос б): Какая черта характера присуща японцам больше всего?");
+        PrintTopAnswers(topCharacterTraitAnswers);
+
+        Console.WriteLine("Вопрос в): Какай неодушевленный предмет или понятие Вы связываете с Японией?");
+        PrintTopAnswers(topConceptAnswers);
+    }
+
+    static void PrintTopAnswers(Dictionary<string, double> topAnswers)
+    {
+        if (topAnswers.Count == 0)
+        {
+            Console.WriteLine("Нет ответов на данный вопрос.");
+        }
+        else
+        {
+            Console.WriteLine("Ответ\t\tДоля (%)");
+            foreach (KeyValuePair<string, double> answer in topAnswers)
+            {
+                Console.WriteLine($"{answer.Key}\t\t{answer.Value:F2}");
+            }
+        }
+        Console.WriteLine();
+    }
+}
