@@ -1,4 +1,4 @@
-// 7 лаба
+// 7 лаба.
 // 1.1
 using System;
 using System.Collections.Generic;
