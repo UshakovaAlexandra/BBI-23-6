@@ -51,6 +51,11 @@ class Participant
     {
         disqualified = true;
     }
+
+    public void PrintParticipantInfo()
+    {
+        Console.WriteLine($"{LastName}\t{Society}\t{GetTotalDistance()}");
+    }
 }
 
 class Program
@@ -61,21 +66,21 @@ class Program
 
         // Добавление участников в список
         participants.Add(new Participant { LastName = "Иванов", Society = "Общество 1", FirstAttempt = 7.2, SecondAttempt = 7.5 });
-        participants.Add(new Participant { LastName = "Петров", Society = "Общество 2", FirstAttempt = 6.8, SecondAttempt = 7.0 });
-        participants.Add(new Participant { LastName = "Сидоров", Society = "Общество 1", FirstAttempt = 7.0, SecondAttempt = 7.2 });
+        participants.Add(new Participant { LastName = "Петров", Society = "Общество 2", FirstAttempt = 7.8, SecondAttempt = 8.0 });
+        participants.Add(new Participant { LastName = "Сидоров", Society = "Общество 1", FirstAttempt = 6.0, SecondAttempt = 6.2 });
 
         // Дисквалификация участника
-        DisqualifyParticipant(participants, "Петров");
+        DisqualifyParticipant(participants, "Сидоров");
 
         // Сортировка результатов по сумме двух попыток и исключение дисквалифицированных участников
         participants = participants.Where(p => !p.Disqualified).OrderByDescending(p => p.GetTotalDistance()).ToList();
 
-        // Вывод протокола в виде таблицы
+        // Вывод протокола
         Console.WriteLine("Место\tФамилия\tОбщество\tРезультат");
         for (int i = 0; i < participants.Count; i++)
         {
             Participant participant = participants[i];
-            Console.WriteLine($"{i + 1}\t{participant.LastName}\t{participant.Society}\t{participant.GetTotalDistance()}");
+            participant.PrintParticipantInfo();
         }
     }
 
@@ -94,7 +99,17 @@ using System.Collections.Generic;
 
 class Person
 {
-    public string FullName { get; set; }
+    private string fullName;
+
+    public string FullName
+    {
+        get { return fullName; }
+    }
+
+    public Person(string fullName)
+    {
+        this.fullName = fullName;
+    }
 }
 
 class Student : Person
@@ -111,6 +126,12 @@ class Student : Person
         }
         return sum / ExamScores.Count;
     }
+
+    public Student(string fullName, string studentID, List<double> examScores) : base(fullName)
+    {
+        StudentID = studentID;
+        ExamScores = examScores;
+    }
 }
 
 class Program
@@ -120,10 +141,10 @@ class Program
         List<Student> students = new List<Student>();
 
         // Добавление студентов в список
-        students.Add(new Student { FullName = "Иванов Михаил Романович", StudentID = "12345", ExamScores = new List<double> { 4.5, 3.8, 3.2, 3.7 } });
-        students.Add(new Student { FullName = "Сидоров Валерий Иванович", StudentID = "54321", ExamScores = new List<double> { 4.2, 4.0, 4.5, 3.9 } });
-        students.Add(new Student { FullName = "Смирнов Александр Сергеевич", StudentID = "98765", ExamScores = new List<double> { 3.9, 4.1, 4.3, 4.4 } });
-        students.Add(new Student { FullName = "Николаева Зинаида Петровна", StudentID = "13579", ExamScores = new List<double> { 3.9, 4.1, 4.3, 4.2 } });
+        students.Add(new Student("Иванов Михаил Романович", "12345", new List<double> { 4.5, 3.8, 3.2, 3.7 }));
+        students.Add(new Student("Сидоров Валерий Иванович", "54321", new List<double> { 4.2, 4.0, 4.5, 3.9 }));
+        students.Add(new Student("Смирнов Александр Сергеевич", "98765", new List<double> { 3.9, 4.1, 4.3, 4.4 }));
+        students.Add(new Student("Николаева Зинаида Петровна", "13579", new List<double> { 3.9, 4.1, 4.3, 4.2 }));
 
         // Фильтрация студентов по среднему баллу
         List<Student> filteredStudents = new List<Student>();
@@ -153,11 +174,30 @@ using System.Linq;
 
 class Country
 {
+    public string CountryName { get; set; }
     public List<string> Answers { get; set; }
 
     public virtual string GetCountryName()
     {
         return "Страна";
+    }
+
+    public void PrintSurveyResults(Dictionary<string, double> topAnswers)
+    {
+        Console.WriteLine($"Ответы для {GetCountryName()}:");
+        if (topAnswers.Count == 0)
+        {
+            Console.WriteLine("Нет ответов на данный вопрос.");
+        }
+        else
+        {
+            Console.WriteLine("Ответ\t\tДоля (%)");
+            foreach (KeyValuePair<string, double> answer in topAnswers)
+            {
+                Console.WriteLine($"{answer.Key}\t\t{answer.Value:F2}");
+            }
+        }
+        Console.WriteLine();
     }
 }
 
@@ -220,19 +260,16 @@ class Program
         survey.ConceptAnswers = new List<string> { "Чайная церемония", "Сакура", "Сакура", "Суши", "Самурай", "Суши", "Сакура" };
 
         // Создание объектов для стран
-        Russia russia = new Russia { Answers = survey.AnimalAnswers };
-        Japan japan = new Japan { Answers = survey.ConceptAnswers };
+        Country russia = new Russia { CountryName = "Россия", Answers = survey.AnimalAnswers };
+        Country japan = new Japan { CountryName = "Япония", Answers = survey.ConceptAnswers };
 
         // Получение ответов для каждой страны
         Dictionary<string, double> topRussiaAnswers = survey.GetTopAnswers(russia.Answers);
         Dictionary<string, double> topJapanAnswers = survey.GetTopAnswers(japan.Answers);
 
         // Вывод результатов для каждой страны
-        Console.WriteLine($"Ответы для {russia.GetCountryName()}:");
-        PrintTopAnswers(topRussiaAnswers);
-
-        Console.WriteLine($"Ответы для {japan.GetCountryName()}:");
-        PrintTopAnswers(topJapanAnswers);
+        russia.PrintSurveyResults(topRussiaAnswers);
+        japan.PrintSurveyResults(topJapanAnswers);
 
         // Объединенные ответы
         List<string> combinedAnswers = new List<string>();
@@ -243,23 +280,9 @@ class Program
 
         // Вывод общих результатов
         Console.WriteLine("Общие ответы для обеих стран:");
-        PrintTopAnswers(topCombinedAnswers);
-    }
-
-    static void PrintTopAnswers(Dictionary<string, double> topAnswers)
-    {
-        if (topAnswers.Count == 0)
+        foreach (var answer in topCombinedAnswers)
         {
-            Console.WriteLine("Нет ответов на данный вопрос.");
+            Console.WriteLine($"{answer.Key}\t\t{answer.Value:F2}");
         }
-        else
-        {
-            Console.WriteLine("Ответ\t\tДоля (%)");
-            foreach (KeyValuePair<string, double> answer in topAnswers)
-            {
-                Console.WriteLine($"{answer.Key}\t\t{answer.Value:F2}");
-            }
-        }
-        Console.WriteLine();
     }
 }
