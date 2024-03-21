@@ -1,136 +1,115 @@
-// 7 лаба.
-// 6.3
+// КР 
+//6.2
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
-class Country
+abstract class Animal
 {
-    public string CountryName { get; set; }
-    public Dictionary<string, int> Answers { get; set; }
-
-    public Country(string countryName, Dictionary<string, int> answers)
-    {
-        CountryName = countryName;
-        Answers = answers;
-    }
-
-    public virtual string GetCountryName()
-    {
-        return "Страна";
-    }
-
-    public void PrintSurveyResults(Dictionary<string, double> topAnswers)
-    {
-        Console.WriteLine($"Ответы для {GetCountryName()}:");
-        if (topAnswers.Count == 0)
-        {
-            Console.WriteLine("Нет ответов на данный вопрос.");
-        }
-        else
-        {
-            Console.WriteLine("Ответ\t\tДоля (%)");
-            foreach (KeyValuePair<string, double> answer in topAnswers)
-            {
-                Console.WriteLine($"{answer.Key}\t\t{answer.Value:F2}");
-            }
-        }
-        Console.WriteLine();
-    }
-}
-
-class Russia : Country
+protected string name;
+protected string dietType;
+public string DietType { get { return dietType; } }
+public Animal(string name, string dietType)
 {
-    public Russia(Dictionary<string, int> answers) : base("Россия", answers) { }
-
-    public override string GetCountryName()
-    {
-        return "Россия";
-    }
+this.name = name;
+this.dietType = dietType;
 }
-
-class Japan : Country
+public abstract void MakeSound();
+public void PrintInfo()
 {
-    public Japan(Dictionary<string, int> answers) : base("Япония", answers) { }
-
-    public override string GetCountryName()
-    {
-        return "Япония";
-    }
+Console.WriteLine( "Name: name", this.name);
+Console.WriteLine("DietType: dietType " , this.dietType);
+Console.Write("Sound: ");
+MakeSound();
+Console.WriteLine();
 }
-
-class Survey
+}
+class Giraffe : Animal
 {
-    public Dictionary<string, List<string>> Questions { get; set; }
-
-    public Survey(Dictionary<string, List<string>> questions)
-    {
-        Questions = questions;
-    }
-
-    public Dictionary<string, double> GetTopAnswers(Dictionary<string, int> answers)
-    {
-        Dictionary<string, double> topAnswers = new Dictionary<string, double>();
-        int totalAnswers = answers.Values.Sum();
-        foreach (var answer in answers)
-        {
-            topAnswers[answer.Key] = (double)answer.Value / totalAnswers * 100;
-        }
-        return topAnswers;
-    }
+public Giraffe(string name) : base(name , "Herbivore")
+{
 }
-
+public override void MakeSound()
+{
+Console.WriteLine("Giraffe: *silence*");
+}
+}
+class Pig : Animal
+{
+public Pig(string name) : base(name, "Omnivore")
+{
+}
+public override void MakeSound()
+{
+Console.WriteLine("Pig: Oink oink!");
+}
+}
+class Elephant : Animal
+{
+public Elephant(string name) : base(name, "Herbivore")
+{
+}
+public override void MakeSound()
+{
+Console.WriteLine("Elephant: Trumpet!");
+}
+}
+class Lion : Animal
+{
+public Lion(string name) : base(name, "Carnivore")
+{
+}
+public override void MakeSound()
+{
+Console.WriteLine("Lion: Roar!");
+}
+}
+class Tiger : Animal
+{
+public Tiger(string name) : base(name, "Carnivore")
+{
+}
+public override void MakeSound()
+{
+Console.WriteLine("Tiger: Growl!");
+}
+}
+class Monkey : Animal
+{
+public Monkey(string name) : base(name, "Omnivore")
+{
+}
+public override void MakeSound()
+{
+Console.WriteLine("Monkey: Ooh ooh aah aah!");
+}
+}
 class Program
 {
-    static void Main()
-    {
-        // Получение ответов на вопросы
-        var surveyQuestions = new Dictionary<string, List<string>>
-        {
-            { "Животные", new List<string> { "Кошка", "Собака", "Рыба", "Рыба", "Кошка", "Кролик", "Кошка" } },
-            { "Черты характера", new List<string> { "Самообладание", "Вежливость", "Трудолюбие", "Трудолюбие", "Трудолюбие" } },
-            { "Понятия", new List<string> { "Чайная церемония", "Сакура", "Сакура", "Суши", "Самурай", "Суши", "Сакура" } }
-        };
-        var survey = new Survey(surveyQuestions);
-
-        // Создание объектов для стран
-        var russiaAnswers = new Dictionary<string, int> { { "Кошка", 3 }, { "Рыба", 2 }, { "Кролик", 1 } };
-        var russia = new Russia(russiaAnswers);
-
-        var japanAnswers = new Dictionary<string, int> { { "Сакура", 4 }, { "Суши", 2 }, { "Самурай", 1 } };
-        var japan = new Japan(japanAnswers);
-
-        // Получение ответов для каждой страны
-        var topRussiaAnswers = survey.GetTopAnswers(russia.Answers);
-        var topJapanAnswers = survey.GetTopAnswers(japan.Answers);
-
-        // Вывод результатов для каждой страны
-        russia.PrintSurveyResults(topRussiaAnswers);
-        japan.PrintSurveyResults(topJapanAnswers);
-
-        // Объединенные ответы
-        var combinedAnswers = new Dictionary<string, int>();
-        foreach (var question in surveyQuestions)
-        {
-            foreach (var answer in question.Value)
-            {
-                if (combinedAnswers.ContainsKey(answer))
-                {
-                    combinedAnswers[answer]++;
-                }
-                else
-                {
-                    combinedAnswers[answer] = 1;
-                }
-            }
-        }
-        var topCombinedAnswers = survey.GetTopAnswers(combinedAnswers);
-
-        // Вывод общих результатов
-        Console.WriteLine("Общие ответы для обеих стран:");
-        foreach (var answer in topCombinedAnswers)
-        {
-            Console.WriteLine($"{answer.Key}\t\t{answer.Value:F2}");
-        }
-    }
+static void Main()
+{
+Animal[] animals = new Animal[]
+{
+new Giraffe("Giraffe1"), new Giraffe("Giraffe2"), new Giraffe ("Giraffe3"),
+new Pig("Pig1"), new Pig("Pig2"), new Pig("Pig3"),
+new Elephant("Elephant1"), new Elephant("Elephant2"), new Elephant("Elephant3"),
+new Lion("Lion1"), new Lion("Lion2"), new Lion("Lion3"),
+new Tiger("Tiger1"), new Tiger("Tiger2"), new Tiger("Tiger3"),
+new Monkey("Monkey1"), new Monkey("Monkey2"), new Monkey("Monkey3")
+};
+Console.WriteLine("Herbivores:");
+PrintAnimalsByDietType(animals, "Herbivore");
+Console.WriteLine("Carnivores:");
+PrintAnimalsByDietType(animals, "Carnivore");
+Console.WriteLine("Omnivores:");
+PrintAnimalsByDietType(animals, "Omnivore");
+Console.ReadKey();
+}
+static void PrintAnimalsByDietType(Animal[] animals, string dietType)
+{
+foreach (Animal animal in animals)
+{
+if (animal.DietType == dietType)
+{
+animal.PrintInfo();
+}
+}
+}
 }
