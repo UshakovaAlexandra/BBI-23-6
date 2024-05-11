@@ -1,171 +1,340 @@
-using System.Collections.Generic;
 using System;
-using System.ComponentModel.Design;
-using System.IO;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
-
 abstract class Task
 {
-    protected string text = "";
-    public string Text
-    {
-        get => text;
-        protected set => text = value;
-    }
-
-    public virtual void Solution() { }
-    public Task(string text)
-    {
-        this.text = text;
-    }
-}
-class Task1 : Task
-{
-    private int answer;
-    public int Answer
-    {
-        get => answer;
-        protected set => answer = value;
-    }
-    [JsonConstructor]
-    public Task1(string text) : base(text)
-    {
-        answer = 0;
-
-    }
-    public override void Solution()
-    {
-        string input = "Мне нравится путешествовать, поэтому текст о моей самой любимой стране.Испания просто поразительная страна, так красиво, тепло и атмосферно. Мы с родителями побывали почти во всех городах этой прекрасной страны, но город Салоу навсегда занимает первое место в моем сердце.";
-        char mostCommonLetter = FindMostCommonLetter(input);
-
-        Console.WriteLine($"Most common letter: {mostCommonLetter}");
-    }
-
-    static char FindMostCommonLetter(string text)
-    {
-        var letterFrequency = text
-            .Where(char.IsLetter)
-            .GroupBy(c => c)
-            .ToDictionary(g => g.Key, g => g.Count());
-
-        char mostCommonLetter = letterFrequency
-            .OrderByDescending(kv => kv.Value)
-            .Select(kv => kv.Key)
-            .FirstOrDefault();
-
-        return mostCommonLetter;
-        
-    }
+    public Task(string text) { }
+    public abstract void ParseText(string text); // все разные
 
 }
 
-class Task2 : Task
+class Task_2 : Task
 {
-    private List<string> answer;
-    public List<string> Answer
+    private string _text;
+    public Task_2(string text) : base(text)
     {
-        get => answer;
+        _text = text;
     }
-    [JsonConstructor]
-    public Task2(string text) : base(text)
+    public override void ParseText(string text)
     {
-        answer = new List<string>();
-
+        _text = ReverseWordsAndKeepPunctuation(text);
     }
-    public override void Solution()
+    public override string ToString()
     {
-        string inputText = "Мне нравится путешествовать, поэтому текст о моей самой любимой стране.Испания просто поразительная страна, так красиво, тепло и атмосферно. Мы с родителями побывали почти во всех городах этой прекрасной страны, но город Салоу навсегда занимает первое место в моем сердце.";
-
-        string[] sentences = inputText.Split(new char[] { '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
-
-        List<string> centralWords = new List<string>();
-
-        foreach (var sentence in sentences)
+        return _text;
+    }
+    private string ReverseWordsAndKeepPunctuation(string text)
+    {
+        var Punctuation = new HashSet<char> { '.', ',', '!', '?', ':', ';', ' ' };
+        var Words = new List<string>();
+        var CurrentWord = new StringBuilder(); // построение текущего слова
+        foreach (var word in text)
         {
-            string[] words = Regex.Split(sentence, @"\s+");
-            int middleIndex = words.Length / 2;
-
-            if (words.Length % 2 == 0)
+            if (Punctuation.Contains(word))
             {
-                centralWords.Add(words[middleIndex - 1]);
-                centralWords.Add(words[middleIndex]);
+                Words.Add(ReverseWord(CurrentWord.ToString()));
+                Words.Add(word.ToString());
+                CurrentWord.Clear();
             }
             else
             {
-                centralWords.Add(words[middleIndex]);
+                CurrentWord.Append(word);
             }
         }
-
-        foreach (var word in centralWords)
+        if (CurrentWord.Length > 0)
         {
-            Console.WriteLine(word);
+            Words.Add(ReverseWord(CurrentWord.ToString()));
         }
+        return string.Join("", Words);
+    }
+    private string ReverseWord(string word)
+    {
+        var chars = word.ToCharArray();
+        Array.Reverse(chars);
+        return new string(chars);
     }
 }
 
-class JsonIO
+
+class Task_4 : Task
 {
-    public static void Write<T>(T obj, string filePath)
+    private string _text;
+    private int _difficulty;
+    public Task_4(string text) : base(text)
     {
-        using (FileStream fs = new FileStream(filePath, FileMode.OpenOrCreate))
+        _text = text;
+    }
+    public override void ParseText(string text)
+    {
+        _difficulty = 0;
+        char[] chartext = text.ToCharArray();
+        foreach (char c in chartext)
         {
-            JsonSerializer.Serialize(fs, obj);
+            if (Char.IsPunctuation(c))
+            {
+                _difficulty++;
+            }
+            else if (Char.IsWhiteSpace(c))
+            {
+                _difficulty++;
+            }
         }
     }
-    public static T Read<T>(string filePath)
+    public override string ToString()
     {
-        using (FileStream fs = new FileStream(filePath, FileMode.OpenOrCreate))
+        return $"Сложность этого предложения: {_difficulty}";
+    }
+}
+
+class Task_6 : Task
+{
+    private string _text;
+    private int[] _syllablesCount;
+
+    public Task_6(string text) : base(text)
+    {
+        _text = text;
+    }
+
+    public override void ParseText(string text)
+    {
+        _syllablesCount = new int[10]; // Ограничение сложности до 10 слогов
+
+        string[] words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string word in words)
         {
-            return JsonSerializer.Deserialize<T>(fs);
+            int Syllables = 0;
+            bool isvowel = false;
+            foreach (char Letter in word)
+            {
+                if (IsVowel(Letter))
+                {
+                    if (!isvowel)
+                    {
+                        Syllables++;
+                        isvowel = true;
+                    }
+                }
+                else
+                {
+                    isvowel = false;
+                }
+            }
+
+            if (Syllables < _syllablesCount.Length) // Проверка на ограничение сложности
+            {
+                _syllablesCount[Syllables]++;
+            }
         }
-        return default(T);
+    }
+
+    private bool IsVowel(char Letter)
+    {
+        return "аеёиоуыэюя".Contains(Letter.ToString().ToLower());
+    }
+
+    public override string ToString()
+    {
+        string Result = "";
+        for (int i = 0; i < _syllablesCount.Length; i++)
+        {
+            Result += $"{i + 1}-сложных слов: {_syllablesCount[i]} \n";
+        }
+
+        return Result;
+    }
+}
+
+
+
+class Task_8 : Task
+{
+    private string _text;
+    public Task_8(string text) : base(text) { }
+    public override string ToString()
+    {
+        return _text;
+    }
+    public override void ParseText(string text)
+    {
+        string[] Words = text.Split();
+        List<string> List_lines = new List<string>();
+        string CurrentLine = "";
+        foreach (string word in Words)
+        {
+            if (CurrentLine.Length + word.Length > 50)
+            {
+                List_lines.Add(CurrentLine);
+                CurrentLine = "";
+            }
+            CurrentLine += word + " ";
+        }
+        List_lines.Add(CurrentLine);
+        for (int i = 0; i < List_lines.Count; i++)
+        {
+            if (List_lines[i].Length > 0)
+            {
+                List_lines[i] = List_lines[i].Remove(List_lines[i].Length - 1);
+                List_lines[i] = ParseLine(List_lines[i]);
+                List_lines[i] += "\n";
+            }
+        }
+        foreach (string line in List_lines)
+        {
+            _text += line;
+        }
+    }
+    public string ParseLine(string line)
+    {
+        string[] All_words = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        int spaces_fill = 50 - line.Length; // Количество пробелов, которые нужно добавить
+        if (All_words.Length > 1)
+        {
+            int Add_spaces = spaces_fill / (All_words.Length - 1); // Количество пробелов между каждым словом для добавления
+            int ExtraSpaces = spaces_fill % (All_words.Length - 1); //  Количество дополнительных пробелов (аналог по ширине)
+            for (int i = 0; i < All_words.Length - 1; i++)
+            {
+                All_words[i] += new string(' ', Add_spaces);
+                if (ExtraSpaces > 0)
+                {
+                    All_words[i] += ' ';
+                    ExtraSpaces--;
+                }
+            }
+        }
+        return string.Join(" ", All_words);
+    }
+}
+
+class Task_9 : Task // сжатие текста 
+{
+    private string _text;
+    public string crypted_text;
+    private Dictionary<string, string> _codes;
+    public Task_9(string text) : base(text)
+    {
+        _text = text;
+        _codes = new Dictionary<string, string>();
+    }
+    public override string ToString()
+    {
+        return _text;
+    }
+    public override void ParseText(string text)
+    {
+        var Sequences = new Dictionary<string, int>(); //для счета 
+        for (int i = 0; i < text.Length - 1; i++)
+        {
+            var Sequence = text.Substring(i, 2); // пара из двух символов 
+            if (!Sequences.ContainsKey(Sequence)) // отсутствует ли пара в тексте 
+            {
+                Sequences[Sequence] = 0;
+            }
+            Sequences[Sequence]++;
+        }
+        char code = '!';
+        foreach (var Sequence in Sequences)
+        {
+            if (!_codes.ContainsKey(Sequence.Key) && _codes.Count < 10) // отсутствует ли ключ Sequence.Key в словаре _codes + кол-во пар меньше 10
+            {
+                _codes[Sequence.Key] = code.ToString();
+                code++;
+            }
+        }
+    }
+    public void EncodeText()
+    {
+        foreach (var codePair in _codes)
+        {
+            _text = _text.Replace(codePair.Key, codePair.Value);
+        }
+        crypted_text = _text;
+    }
+}
+
+
+
+class Task_10 : Task
+{
+    private string _text;
+    private Dictionary<string, string> _codes; //для соответствий
+    public Task_10(string text) : base(text)
+    {
+        _text = text;
+        _codes = new Dictionary<string, string>();
+    }
+    public override string ToString()
+    {
+        return _text;
+    }
+    public override void ParseText(string text)
+    {
+        var Sequences = new Dictionary<string, int>(); //для счета
+        for (int i = 0; i < text.Length - 1; i++)
+        {
+            var Sequence = text.Substring(i, 2); // пара из двух символов
+            if (!Sequences.ContainsKey(Sequence)) // отсутствует ли пара из в тексте
+            {
+                Sequences[Sequence] = 0;
+            }
+            Sequences[Sequence]++;
+        }
+        char code = '!';
+        foreach (var Sequence in Sequences)
+        {
+            if (!_codes.ContainsKey(Sequence.Key)) // отсутствует ли ключ Sequence.Key в словаре _codes
+            {
+                _codes[Sequence.Key] = code.ToString();
+                code++;
+            }
+        }
+    }
+    public void DecodeText()
+    {
+        foreach (var codePair in _codes)
+        {
+            _text = _text.Replace(codePair.Value, codePair.Value);
+        }
     }
 }
 class Program
 {
-    static void Main()
+    public static void Main()
     {
-        string text = "Мне нравится путешествовать, поэтому текст о моей самой любимой стране.Испания просто поразительная страна, так красиво, тепло и атмосферно. Мы с родителями побывали почти во всех городах этой прекрасной страны, но город Салоу навсегда занимает первое место в моем сердце. ";
-        Task[] tasks = {
-            new Task1(text),
-            new Task2(text)
-        };
-        Console.WriteLine(tasks[0]);
-        Console.WriteLine(tasks[1]);
+        string text = "Первое слово, второе слово. первое слово::::";
 
-        string path = @"C:\Users\m2309537\Discord";
-        string folderName = "Control work";
-        path = Path.Combine(path, folderName);
-        if (!Directory.Exists(path))
-        {
-            Directory.CreateDirectory(path);
-        }
-        string fileName1 = "cw2_1.json";
-        string fileName2 = "cw2_2.json";
+        Task_2 task2 = new Task_2(text);
+        task2.ParseText(text);
+        Console.WriteLine(task2.ToString());
 
-        fileName1 = Path.Combine(path, fileName1);
-        fileName2 = Path.Combine(path, fileName2);
-        if (!File.Exists(fileName1))
-        {
-            JsonIO.Write<Task1>(tasks[0] as Task1, fileName1);
-        }
-        else
-        {
-            var t1 = JsonIO.Read<Task2>(fileName1);
-            Console.WriteLine(t1);
-        }
-        if (!File.Exists(fileName2))
-        {
-            JsonIO.Write<Task2>(tasks[1] as Task2, fileName2);
-        }
-        else
-        {
-            var t2 = JsonIO.Read<Task2>(fileName2);
-            Console.WriteLine(t2);
-        }
+        Task_4 task4 = new Task_4(text);
+        task4.ParseText(text);
+        Console.WriteLine(task4.ToString());
 
+        Task_6 task6 = new Task_6(text);
+        task6.ParseText(text);
+        Console.WriteLine(task6.ToString());
+
+        Task_8 task8 = new Task_8(text);
+        task8.ParseText(text);
+        Console.WriteLine(task8.ToString());
+
+        Task_9 task9 = new Task_9(text);
+        task9.ParseText(text);
+        task9.EncodeText();
+        Console.WriteLine("Зашифрованный текст:");
+        Console.WriteLine(task9.ToString());
+
+        Console.WriteLine();
+
+        Task_10 task10 = new Task_10(text);
+        task10.ParseText(text);
+        task10.DecodeText();
+        Console.WriteLine("Расшифрованный текст:");
+        Console.WriteLine(task10.ToString());
+        Console.ReadKey();
     }
 }
