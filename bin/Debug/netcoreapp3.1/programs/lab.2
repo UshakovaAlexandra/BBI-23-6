@@ -1,0 +1,146 @@
+using System;
+
+public class Node
+{
+    public int Data { get; set; }
+    public Node Left { get; set; }
+    public Node Right { get; set; }
+
+    public Node(int data)
+    {
+        Data = data;
+        Left = null;
+        Right = null;
+    }
+}
+
+public class BinarySearchTree
+{
+    private Node root;
+
+    public BinarySearchTree()
+    {
+        root = null;
+    }
+
+    // Добавление узла
+    public void Insert(int data)
+    {
+        root = Insert(root, data);
+    }
+
+    private Node Insert(Node node, int data)
+    {
+        if (node == null)
+        {
+            return new Node(data);
+        }
+
+        if (data < node.Data)
+        {
+            node.Left = Insert(node.Left, data);
+        }
+        else if (data > node.Data)
+        {
+            node.Right = Insert(node.Right, data);
+        }
+
+        return node;
+    }
+
+    // Удаление узла
+    public void Delete(int data)
+    {
+        root = Delete(root, data);
+    }
+
+    private Node Delete(Node node, int data)
+    {
+        if (node == null)
+        {
+            return null;
+        }
+
+        if (data < node.Data)
+        {
+            node.Left = Delete(node.Left, data);
+        }
+        else if (data > node.Data)
+        {
+            node.Right = Delete(node.Right, data);
+        }
+        else
+        {
+            // Узел с одним или нулевым потомком
+            if (node.Left == null)
+            {
+                return node.Right;
+            }
+            else if (node.Right == null)
+            {
+                return node.Left;
+            }
+
+            // Узел с двумя потомками
+            // Находим наименьший узел в правом поддереве
+            node.Data = FindMin(node.Right).Data;
+            // Удаляем наименьший узел в правом поддереве
+            node.Right = Delete(node.Right, node.Data);
+        }
+
+        return node;
+    }
+
+    // Нахождение наименьшего узла в поддереве
+    private Node FindMin(Node node)
+    {
+        if (node.Left == null)
+        {
+            return node;
+        }
+        return FindMin(node.Left);
+    }
+
+    // Печать дерева (для проверки)
+    public void PrintInOrder()
+    {
+        PrintInOrder(root);
+    }
+
+    private void PrintInOrder(Node node)
+    {
+        if (node != null)
+        {
+            PrintInOrder(node.Left);
+            Console.Write(node.Data + " ");
+            PrintInOrder(node.Right);
+        }
+    }
+}
+
+public class Example
+{
+    public static void Main(string[] args)
+    {
+        BinarySearchTree tree = new BinarySearchTree();
+
+        // Добавление узлов
+        tree.Insert(50);
+        tree.Insert(30);
+        tree.Insert(20);
+        tree.Insert(40);
+        tree.Insert(70);
+        tree.Insert(60);
+        tree.Insert(80);
+
+        Console.WriteLine("Дерево после добавления узлов:");
+        tree.PrintInOrder();
+
+        // Удаление узлов
+        tree.Delete(20);
+        tree.Delete(70);
+
+        Console.WriteLine("\nДерево после удаления узлов:");
+        tree.PrintInOrder();
+    }
+}
